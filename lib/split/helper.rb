@@ -19,6 +19,7 @@ module Split
         control ||= experiment.control && experiment.control.name
 
         ret = if Split.configuration.enabled
+          Rails.logger.info "[Split] : helper : ab_test : experiment.save"
           experiment.save
           start_trial( Trial.new(:experiment => experiment) )
         else

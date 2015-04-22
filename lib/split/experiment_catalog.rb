@@ -1,3 +1,4 @@
+
 module Split
   class ExperimentCatalog
     # Return all experiments
@@ -26,6 +27,10 @@ module Split
       name = experiment_name_with_version.to_s.split(':')[0]
 
       exp = Experiment.new name, :alternatives => alternatives, :goals => goals
+
+      Rails.logger.info "[Split] : ExperimentCatalog : find_or_create : exp.save"
+
+
       exp.save
       exp
     end

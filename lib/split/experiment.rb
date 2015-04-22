@@ -92,14 +92,29 @@
       validate!
 
       if new_record?
+        Rails.logger.info "[Split] : Experiment : def save : new_record?"
+
         Split.redis.sadd(:experiments, name)
         start unless Split.configuration.start_manually
         @alternatives.reverse.each {|a| Split.redis.lpush(name, a.name)}
         @goals.reverse.each {|a| Split.redis.lpush(goals_key, a)} unless @goals.nil?
       else
+        Rails.logger.info "[Split] : Experiment : def save : NOT new_record?"
+
         existing_alternatives = load_alternatives_from_redis
         existing_goals = load_goals_from_redis
+
+          Rails.logger.info existing_alternatives.inspect
+          Rails.logger.info @alternatives.inspect
+
+
+          Rails.logger.info existing_goals.inspect
+          Rails.logger.info @goals.inspect
+                  
         unless existing_alternatives == @alternatives.map(&:name) && existing_goals == @goals
+
+          Rails.logger.info "[Split] : Experiment : def save : resetting"
+
           reset
           @alternatives.each(&:delete)
           delete_goals
@@ -282,6 +297,7 @@
 
       calc_time = Time.now.day
 
+      Rails.logger.info "[Split] : Experiment : calc_winning_alternatives : self.save"
       self.save
     end
 
@@ -308,6 +324,8 @@
       @alternative_probabilities = calc_alternative_probabilities(winning_counts, Split.configuration.beta_probability_simulations)
 
       write_to_alternatives(@alternative_probabilities, goal)
+
+      Rails.logger.info "[Split] : Experiment : estimate_winning_alternative : self.save"
 
       self.save
     end
