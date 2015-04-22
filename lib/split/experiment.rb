@@ -104,12 +104,8 @@
         existing_alternatives = load_alternatives_from_redis
         existing_goals = load_goals_from_redis
 
-          Rails.logger.info existing_alternatives.inspect
-          Rails.logger.info @alternatives.inspect
-
-
-          Rails.logger.info existing_goals.inspect
-          Rails.logger.info @goals.inspect
+          Rails.logger.info "[Split] : existing_alternatives : #{existing_alternatives.inspect}"
+          Rails.logger.info "[Split] : @alternatives.inspect : #{@alternatives.inspect}"
                   
         unless existing_alternatives == @alternatives.map(&:name) && existing_goals == @goals
 
@@ -235,6 +231,8 @@
 
     def increment_version
       @version = Split.redis.incr("#{name}:version")
+      Rails.logger.info "[Split] : Experiment : increment_version > #{@version}"
+
     end
 
     def key
